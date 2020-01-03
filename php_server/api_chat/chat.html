@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <title>Chat Room</title>
+    </head>
+    <body style="font-family: Arial; font-size: 16px;">
+        <h1>Chat room Text</h1>
+        <div id="messages" style="height:500px;width:100%;border: 1px solid black;">
+            Text kommt hier .. 
+        </div>
+        <div style="height:50px;width:100%;border: 1px solid black;">
+            <input type="text" id="msg" style="height:50px;width:80%;">
+            <input type="button" value="Senden" id="send" style="height:30px;width:10%;" onclick="send_get_text();">
+        </div>
+        <script>
+
+            function send_get_text(){
+                var msg         = document.getElementById("msg");
+                var messages    = document.getElementById("messages");
+                var api_send    = "http://localhost/api_chat/send.php";
+                var api_get     = "http://localhost/api_chat/get.php";
+                
+                if(msg.value != ""){
+
+                    var xmlhttp = new XMLHttpRequest();
+                    xmlhttp.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200) {
+                            var output_text = "";
+                            var obj =  JSON.parse(this.responseText);
+                            for(i=0; i< obj.messages.length; i++){
+                                output_text += obj.messages[i].ip + " , ";
+                                output_text += obj.messages[i].datum + " : ";
+                                output_text += obj.messages[i].text + "<br/>";
+                            }
+                            messages.innerHTML = output_text;
+                            console.log(obj.messages[0].text);
+                        }
+                    };
+                    xmlhttp.open("GET", encodeURI(api_get + "?msg=" + msg.value), true);
+                    xmlhttp.send();
+                    msg.value = "";
+                }
+
+            }
+
+        </script>
+    </body>
+</html>
